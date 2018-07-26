@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">demo_app</string>
+    <string-array name="types">
+        <item>Man</item>
+        <item>Woman</item>
+        <item>Child</item>
+    </string-array>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+</resources>
