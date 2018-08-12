@@ -16,6 +16,7 @@ import com.example.fella.demo_app.App
 
 import com.example.fella.demo_app.R
 import com.example.fella.demo_app.adapters.DiscountAdapter
+import com.example.fella.demo_app.adapters.DiscountDelegateAdapter
 import com.example.fella.demo_app.utils.InfiniteScrollListener
 import com.example.fella.demo_app.utils.inflate
 import com.example.fella.demo_app.viewmodel.DiscountViewModel
@@ -24,7 +25,7 @@ import kotlinx.android.synthetic.main.fragment_child_discount.*
 import javax.inject.Inject
 
 
-class ChildDiscountFragment : Fragment(),  DiscountAdapter.OnViewSelectedListener {
+class ChildDiscountFragment : Fragment(),  DiscountDelegateAdapter.OnViewSelectedListener {
     @Inject
     lateinit var discountViewModelFactory: DiscountViewModelFactory
     private lateinit var discountAdapter: DiscountAdapter
@@ -45,7 +46,6 @@ class ChildDiscountFragment : Fragment(),  DiscountAdapter.OnViewSelectedListene
     }
 
     private fun requestData() {
-        progressBar_child.visibility=View.VISIBLE
         model.getChildDiscounts()
     }
 
@@ -64,11 +64,6 @@ class ChildDiscountFragment : Fragment(),  DiscountAdapter.OnViewSelectedListene
         model.getChildDiscounts().observe(this, Observer { item ->
             discountAdapter.removeAllItems()
             discountAdapter.addItems(item!!)
-        })
-        model.hideChildProgressBar.observe(this, Observer {
-            it?.getContentIfNotHandled()?.let {
-                progressBar_child.visibility = View.GONE
-            }
         })
         model.showChildError.observe(this, Observer {
             it?.getContentIfNotHandled()?.let {

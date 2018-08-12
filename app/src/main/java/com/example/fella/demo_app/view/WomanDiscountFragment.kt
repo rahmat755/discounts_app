@@ -16,6 +16,7 @@ import com.example.fella.demo_app.App
 
 import com.example.fella.demo_app.R
 import com.example.fella.demo_app.adapters.DiscountAdapter
+import com.example.fella.demo_app.adapters.DiscountDelegateAdapter
 import com.example.fella.demo_app.utils.InfiniteScrollListener
 import com.example.fella.demo_app.utils.inflate
 import com.example.fella.demo_app.viewmodel.DiscountViewModel
@@ -24,7 +25,7 @@ import kotlinx.android.synthetic.main.fragment_woman_discount.*
 import javax.inject.Inject
 
 
-class WomanDiscountFragment : Fragment(), DiscountAdapter.OnViewSelectedListener {
+class WomanDiscountFragment : Fragment(), DiscountDelegateAdapter.OnViewSelectedListener {
 
 
     @Inject
@@ -47,7 +48,6 @@ class WomanDiscountFragment : Fragment(), DiscountAdapter.OnViewSelectedListener
     }
 
     private fun requestData() {
-        progressBar_woman.visibility = View.VISIBLE
         model.getWomanDiscounts()
     }
 
@@ -66,11 +66,6 @@ class WomanDiscountFragment : Fragment(), DiscountAdapter.OnViewSelectedListener
         model.getWomanDiscounts().observe(this, Observer { item ->
             discountAdapter.removeAllItems()
             discountAdapter.addItems(item!!)
-        })
-        model.hideWomanProgressBar.observe(this, Observer {
-            it?.getContentIfNotHandled()?.let {
-                progressBar_woman.visibility = View.GONE
-            }
         })
         model.showWomanError.observe(this, Observer {
             it?.getContentIfNotHandled()?.let {

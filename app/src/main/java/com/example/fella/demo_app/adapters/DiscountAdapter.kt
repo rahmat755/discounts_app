@@ -1,65 +1,50 @@
 package com.example.fella.demo_app.adapters
 
+import android.support.v4.util.SparseArrayCompat
 import android.support.v7.widget.RecyclerView
-import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.TextView
-import com.example.fella.demo_app.R
 import com.example.fella.demo_app.model.entities.DiscountItem
-import com.example.fella.demo_app.utils.inflate
-import com.example.fella.demo_app.utils.loadImg
-import java.util.ArrayList
+import com.example.fella.demo_app.utils.AdapterConstants
 
-class DiscountAdapter(private val listener: OnViewSelectedListener): RecyclerView.Adapter<DiscountAdapter.DiscountViewHolder>() {
-    interface OnViewSelectedListener{
-        fun onItemClicked(itemURL: String)
-    }
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DiscountViewHolder {
-        val itemView = parent.inflate(R.layout.dicount_item)
-        return DiscountViewHolder(itemView)
+class DiscountAdapter(listener: DiscountDelegateAdapter.OnViewSelectedListener) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+    private var discountItems: ArrayList<ViewType>  = arrayListOf()
+    private var delegateAdapters = SparseArrayCompat<ViewTypeDelegateAdapter>()
+
+    private val loadingItem = object : ViewType {
+        override fun getViewType() = AdapterConstants.LOADING
     }
 
-    private var previousPosition: Int? = null
-    private var discountItems: ArrayList<DiscountItem> = arrayListOf()
-    override fun onBindViewHolder(holder: DiscountViewHolder, position: Int) {
-        holder.itemBrand?.text = discountItems[position].brand
-        holder.itemType?.text = discountItems[position].type
-        holder.oldPrice?.text = discountItems[position].priceold.toString()
-        holder.newPrice?.text = discountItems[position].pricenew.toString()
-        holder.itemPreview?.loadImg(discountItems[position].photourl!!)
-        holder.itemView.setOnClickListener { listener.onItemClicked(discountItems[position].url!!) }
-    }
-
-    fun addItems(items: ArrayList<DiscountItem>) {
-        previousPosition = discountItems.size
-        discountItems.addAll(items)
-        notifyDataSetChanged()
-    }
-
-    fun removeAllItems() {
-        previousPosition = itemCount
-        discountItems.clear()
-        notifyItemRangeRemoved(0, previousPosition!!)
+    init {
+        delegateAdapters.put(AdapterConstants.LOADING, LoadingDelegateAdapter())
+        delegateAdapters.put(AdapterConstants.DISCOUNTS, DiscountDelegateAdapter(listener))
+        discountItems.add(loadingItem)
     }
 
     override fun getItemCount(): Int = discountItems.size
 
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
+            delegateAdapters.get(viewType).onCreateViewHolder(parent)
 
-    inner class DiscountViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        var itemType: TextView? = null
-        var itemBrand: TextView? = null
-        var oldPrice: TextView? = null
-        var newPrice: TextView? = null
-        var itemPreview: ImageView? = null
 
-        init {
-            itemBrand = itemView.findViewById(R.id.item_brand)
-            itemType = itemView.findViewById(R.id.item_type)
-            oldPrice = itemView.findViewById(R.id.previous_price)
-            newPrice = itemView.findViewById(R.id.price_now)
-            itemPreview = itemView.findViewById(R.id.preview)
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        delegateAdapters.get(getItemViewType(position)).onBindViewHolder(holder, discountItems[position])
+    }
 
-        }
+    override fun getItemViewType(position: Int) = discountItems[position].getViewType()
+
+    fun addItems(city: ArrayList<DiscountItem>, show: Boolean = true) {
+        val initPosition = discountItems.size - 1
+        discountItems.removeAt(initPosition)
+        notifyItemRemoved(initPosition)
+        discountItems.addAll(city)
+        if (show)
+            discountItems.add(loadingItem)
+        notifyItemRangeChanged(initPosition, discountItems.size + 1 )
+    }
+
+    fun removeAllItems() {
+        discountItems.clear()
+        discountItems.add(loadingItem)
+        notifyDataSetChanged()
     }
 }

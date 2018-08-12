@@ -19,12 +19,13 @@ import android.content.Intent
 import android.net.Uri
 import android.util.Log
 import com.example.fella.demo_app.App
+import com.example.fella.demo_app.adapters.DiscountDelegateAdapter
 import com.example.fella.demo_app.viewmodel.DiscountViewModel
 import com.example.fella.demo_app.viewmodel.DiscountViewModelFactory
 import javax.inject.Inject
 
 
-class ManDiscountFragment : Fragment(), DiscountAdapter.OnViewSelectedListener {
+class ManDiscountFragment : Fragment(), DiscountDelegateAdapter.OnViewSelectedListener {
     override fun onItemClicked(itemURL: String) {
         startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(itemURL)))
     }
@@ -45,7 +46,6 @@ class ManDiscountFragment : Fragment(), DiscountAdapter.OnViewSelectedListener {
         App.discountsComponent.injectMan(this)
     }
     private fun requestData() {
-        progressBar_man.visibility=View.VISIBLE
         model.getManDiscounts()
     }
 
@@ -65,11 +65,6 @@ class ManDiscountFragment : Fragment(), DiscountAdapter.OnViewSelectedListener {
         model.getManDiscounts().observe(this, Observer{ item ->
             discountAdapter.removeAllItems()
             discountAdapter.addItems(item!!)
-        })
-        model.hideManProgressBar.observe(this, Observer {
-            it?.getContentIfNotHandled()?.let{
-                progressBar_man.visibility=View.GONE
-            }
         })
         model.showManError.observe(this, Observer {
             it?.getContentIfNotHandled()?.let {

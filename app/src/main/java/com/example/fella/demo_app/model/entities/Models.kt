@@ -1,10 +1,14 @@
 package com.example.fella.demo_app.model.entities
 
+import com.example.fella.demo_app.adapters.ViewType
+import com.example.fella.demo_app.utils.AdapterConstants
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 
 
-class DiscountItem {
+class DiscountItem: ViewType {
+        override fun getViewType(): Int = AdapterConstants.DISCOUNTS
+
         @SerializedName("id")
         @Expose
         var id: String? = null
