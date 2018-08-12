@@ -8,9 +8,9 @@ import retrofit2.http.Query
 
 interface DiscountApi {
     @GET("/discounts/man")
-    fun getManDiscounts(@Query("page") page : Int): Observable<ArrayList<DiscountItem>>
+    fun getManDiscounts(@Query("page") page : Int): Flowable<ArrayList<DiscountItem>>
     @GET("/discounts/woman")
-    fun getWomanDiscounts(@Query("page") page : Int): Observable<ArrayList<DiscountItem>>
+    fun getWomanDiscounts(@Query("page") page : Int): Flowable<ArrayList<DiscountItem>>
     @GET("/discounts/child")
-    fun getChildDiscounts(@Query("page") page : Int): Observable<ArrayList<DiscountItem>>
+    fun getChildDiscounts(@Query("page") page : Int): Flowable<ArrayList<DiscountItem>>
 }

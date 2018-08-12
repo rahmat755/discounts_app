@@ -44,18 +44,17 @@ class DiscountsActivity : AppCompatActivity(), AdapterView.OnItemSelectedListene
                 R.array.types, android.R.layout.simple_spinner_item)
         adapt.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         spinner.adapter = adapt
-        when (spinner.selectedItemPosition) {
-            0 -> {
-                if (App.state == null)
+        if (savedInstanceState==null){
+            when (spinner.selectedItemPosition) {
+                0 -> {
                     changeFragment(ManDiscountFragment())
-            }
-            1 -> {
-                if (App.state == null)
-                    changeFragment(WomanDiscountFragment())
-            }
-            2 -> {
-                if (App.state == null)
-                    changeFragment(ChildDiscountFragment())
+                }
+                1 -> {
+                        changeFragment(WomanDiscountFragment())
+                }
+                2 -> {
+                        changeFragment(ChildDiscountFragment())
+                }
             }
         }
     }
@@ -67,12 +66,6 @@ class DiscountsActivity : AppCompatActivity(), AdapterView.OnItemSelectedListene
     }
 
     private fun changeFragment(f: Fragment, cleanStack: Boolean = false) {
-        App.page = 1
-        App.discounts_woman.clear()
-        App.discounts_man.clear()
-        App.discounts_child.clear()
-        App.state = null
-        App.compositeDisposable.clear()
         val ft = supportFragmentManager.beginTransaction()
         if (cleanStack) {
             clearBackStack()

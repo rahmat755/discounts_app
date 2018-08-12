@@ -32,4 +32,7 @@ class DiscountItem {
         @SerializedName("discount")
         @Expose
         var discount: Int? = null
+        @SerializedName("sizes")
+        @Expose
+        var sizes: ArrayList<String>? = null
 }

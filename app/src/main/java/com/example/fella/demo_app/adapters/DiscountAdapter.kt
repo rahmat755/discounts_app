@@ -11,7 +11,7 @@ import com.example.fella.demo_app.utils.inflate
 import com.example.fella.demo_app.utils.loadImg
 import java.util.ArrayList
 
-class DiscountAdapter(val listener: OnViewSelectedListener): RecyclerView.Adapter<DiscountAdapter.DiscountViewHolder>() {
+class DiscountAdapter(private val listener: OnViewSelectedListener): RecyclerView.Adapter<DiscountAdapter.DiscountViewHolder>() {
     interface OnViewSelectedListener{
         fun onItemClicked(itemURL: String)
     }
@@ -34,7 +34,7 @@ class DiscountAdapter(val listener: OnViewSelectedListener): RecyclerView.Adapte
     fun addItems(items: ArrayList<DiscountItem>) {
         previousPosition = discountItems.size
         discountItems.addAll(items)
-        notifyItemRangeInserted(previousPosition!!, items.size)
+        notifyDataSetChanged()
     }
 
     fun removeAllItems() {

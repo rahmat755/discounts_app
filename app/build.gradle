@@ -48,4 +48,12 @@ dependencies {
     //Refrofit
     implementation 'com.squareup.retrofit2:retrofit:2.4.0'
     implementation 'com.squareup.retrofit2:converter-gson:2.4.0'
+    //DAGGER 2
+    implementation 'com.google.dagger:dagger:2.16'
+    kapt 'com.google.dagger:dagger-compiler:2.16'
+
+    //AAC
+    implementation "android.arch.lifecycle:extensions:1.1.1"
+    implementation 'android.arch.lifecycle:reactivestreams:1.1.1'
+    implementation "android.arch.lifecycle:viewmodel:1.1.1"
 }

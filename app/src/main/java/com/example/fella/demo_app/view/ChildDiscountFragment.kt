@@ -1,6 +1,8 @@
 package com.example.fella.demo_app.view
 
 
+import android.arch.lifecycle.Observer
+import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -14,56 +16,65 @@ import com.example.fella.demo_app.App
 
 import com.example.fella.demo_app.R
 import com.example.fella.demo_app.adapters.DiscountAdapter
-import com.example.fella.demo_app.model.entities.DiscountItem
-import com.example.fella.demo_app.presenter.ChildDiscountPresenter
-import com.example.fella.demo_app.presenter.MainContract
 import com.example.fella.demo_app.utils.InfiniteScrollListener
 import com.example.fella.demo_app.utils.inflate
-import kotlinx.android.synthetic.main.activity_discounts.*
+import com.example.fella.demo_app.viewmodel.DiscountViewModel
+import com.example.fella.demo_app.viewmodel.DiscountViewModelFactory
 import kotlinx.android.synthetic.main.fragment_child_discount.*
+import javax.inject.Inject
 
 
-class ChildDiscountFragment : Fragment(), MainContract.View, DiscountAdapter.OnViewSelectedListener {
-
+class ChildDiscountFragment : Fragment(),  DiscountAdapter.OnViewSelectedListener {
+    @Inject
+    lateinit var discountViewModelFactory: DiscountViewModelFactory
     private lateinit var discountAdapter: DiscountAdapter
     private val linearLayout = LinearLayoutManager(context)
-    private lateinit var mPresenter: ChildDiscountPresenter
+    lateinit var model: DiscountViewModel
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        App.discountsComponent.injectChild(this)
+    }
     override fun onItemClicked(itemURL: String) {
         startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(itemURL)))
     }
 
-    override fun showDiscounts(discounts: ArrayList<DiscountItem>) {
-        discountAdapter.addItems(discounts)
+    private fun showError(error: String) {
+        Snackbar.make(child_discount_recycler_view, error, Snackbar.LENGTH_INDEFINITE)
+                .setAction("Повторить попытку") { requestData() }.show()
     }
 
-    override fun showError(error: Throwable) {
-        Snackbar.make(child_discount_recycler_view, "$error", Snackbar.LENGTH_INDEFINITE)
-                .setAction("Повторить попытку") { requestData(page = App.page) }.show()
-    }
-
-    override fun showProgressBar() {
-        activity?.progressBar?.visibility = View.VISIBLE
-    }
-
-    override fun hideProgressBar() {
-        activity?.progressBar?.visibility = View.GONE
-    }
-
-    private fun requestData(page: Int) {
-        mPresenter.onLoad(page)
+    private fun requestData() {
+        progressBar_child.visibility=View.VISIBLE
+        model.getChildDiscounts()
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
+        model = ViewModelProviders.of(this, discountViewModelFactory).get(DiscountViewModel::class.java)
         discountAdapter = DiscountAdapter(this)
-        mPresenter = ChildDiscountPresenter(this)
         child_discount_recycler_view.apply {
             layoutManager = linearLayout
             adapter = discountAdapter
-            addOnScrollListener(InfiniteScrollListener({ requestData(App.page) }, linearLayout))
+            addOnScrollListener(InfiniteScrollListener({ requestData() }, linearLayout))
         }
-        requestData(App.page)
+        model.getChildRecyclerViewState().observe(this, Observer { state ->
+            linearLayout.onRestoreInstanceState(state)
+        })
+        model.getChildDiscounts().observe(this, Observer { item ->
+            discountAdapter.removeAllItems()
+            discountAdapter.addItems(item!!)
+        })
+        model.hideChildProgressBar.observe(this, Observer {
+            it?.getContentIfNotHandled()?.let {
+                progressBar_child.visibility = View.GONE
+            }
+        })
+        model.showChildError.observe(this, Observer {
+            it?.getContentIfNotHandled()?.let {
+                showError(it)
+            }
+        })
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -73,20 +84,11 @@ class ChildDiscountFragment : Fragment(), MainContract.View, DiscountAdapter.OnV
 
     override fun onResume() {
         super.onResume()
-        if (App.state != null) {
-            linearLayout.onRestoreInstanceState(App.state)
-            discountAdapter.removeAllItems()
-            discountAdapter.addItems(App.discounts_child)
-        }
-    }
+        linearLayout.onRestoreInstanceState(model.childRecyclerViewState?.value)
 
-    override fun onPause() {
-        super.onPause()
-        App.state = linearLayout.onSaveInstanceState()
     }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        mPresenter.onDestroy()
+    override fun onStop() {
+        super.onStop()
+        model.childRecyclerViewState!!.value = linearLayout.onSaveInstanceState()
     }
 }
