@@ -1,6 +1,4 @@
 # discounts_mvp
-![](https://preview.ibb.co/n7N64T/Screenshot_1532618318.png)
-![](https://preview.ibb.co/kTqtjT/Screenshot_1532618323.png)
-![](https://preview.ibb.co/jgMzPT/Screenshot_1532618331.png)
-![](https://preview.ibb.co/mnCvyo/Screenshot_1532618341.png)
-![](https://preview.ibb.co/j8RzPT/Screenshot_1532618350.png)
+![](https://preview.ibb.co/iOzLo9/Screenshot_1534342348.png)
+![](https://preview.ibb.co/gRhJap/Screenshot_1534342357.png)
+![](https://preview.ibb.co/n1at89/Screenshot_1534342370.png)
