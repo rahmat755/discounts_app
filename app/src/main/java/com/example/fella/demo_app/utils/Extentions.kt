@@ -2,6 +2,7 @@
 
 package com.example.fella.demo_app.utils
 
+import android.arch.lifecycle.MutableLiveData
 import android.graphics.Bitmap
 import android.text.TextUtils
 import android.view.LayoutInflater
@@ -31,3 +32,5 @@ fun ImageView.loadImg(imageUrl:String) {
                 .into(this)
     }
 }
+
+fun <T : Any?> MutableLiveData<T>.default(initialValue: T) = apply { setValue(initialValue) }
